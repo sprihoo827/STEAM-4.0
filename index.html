@@ -264,18 +264,22 @@ async function generateActivity() {
 
         const result = await response.json(); 
 
-            // Aquí 'result.error' vendrá del backend si algo falló allí
+        // === CORRECCIÓN DE LÓGICA ===
+        // Se usa "if / else if" para manejar correctamente el error o el éxito
+        if (result.error) {
+            // Caso 1: El backend nos devuelve un error (ej: API key mal)
             throw new Error(`Error en el Backend: ${result.error}`);
-        }
-        
-        if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
-             const jsonText = result.candidates[0].content.parts[0].text;
-             const activityData = JSON.parse(jsonText);
-             currentActivityData = activityData; 
-             displayActivity(activityData, subject, level);
+        } else if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+            // Caso 2: Éxito total, tenemos la actividad
+            const jsonText = result.candidates[0].content.parts[0].text;
+            const activityData = JSON.parse(jsonText);
+            currentActivityData = activityData; 
+            displayActivity(activityData, subject, level);
         } else {
-             throw new Error("La respuesta de la API no tiene el formato esperado.");
+            // Caso 3: Respuesta inesperada
+            throw new Error("La respuesta de la API no tiene el formato esperado.");
         }
+        // === FIN DE LA CORRECCIÓN ===
 
     } catch (error) {
         console.error("Error fetching activity:", error);
@@ -459,16 +463,19 @@ async function callGemini(userQuery, systemPrompt) {
 
     const result = await response.json(); 
 
+    // === CORRECCIÓN DE LÓGICA ===
+    // Se usa "if / else if" para manejar correctamente el error o el éxito
     if (result.error) {
-        // Aquí 'result.error' vendrá del backend si algo falló allí
+        // Caso 1: Error del backend
         throw new Error(`Error en el Backend: ${result.error}`);
-    }
-    
-    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
+    } else if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
+        // Caso 2: Éxito total
         return result.candidates[0].content.parts[0].text;
     } else {
+        // Caso 3: Respuesta inesperada
         throw new Error("La respuesta de la API no tiene el texto esperado.");
     }
+    // === FIN DE LA CORRECCIÓN ===
 }
 
 // ... (el resto de funciones, showMiniLoader, displayError, etc. siguen igual) ...
