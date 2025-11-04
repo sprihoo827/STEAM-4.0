@@ -1,13 +1,7 @@
 // Este archivo debe estar en: /api/generate.js
 
-// Vercel usa Node.js, así que importamos 'fetch' (si usamos una versión antigua)
-// pero las versiones modernas de Vercel lo tienen globalmente.
-// No se necesita 'UrlFetchApp'.
-
 export default async function handler(request, response) {
-  // 1. Añadimos cabeceras CORS para ser flexibles
-  // Aunque Vercel lo sirve desde el mismo dominio, esto no hace daño
-  // y permite pruebas desde tu PC (localhost)
+  // Añadimos cabeceras CORS para ser flexibles
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -23,20 +17,23 @@ export default async function handler(request, response) {
   }
 
   try {
-    // 2. Obtenemos la clave API de forma SEGURA
-    // En Vercel, esto se hace con "Environment Variables"
-    // (Configuración del Proyecto > Environment Variables)
-    // Debes crear una variable llamada: GEMINI_API_KEY
+    // Obtenemos la clave API de forma SEGURA
     const API_KEY = process.env.GEMINI_API_KEY;
 
     if (!API_KEY) {
       throw new Error("No se ha configurado la API key en Vercel.");
     }
 
-    // 3. Obtenemos los datos que nos envía el HTML
-    // Vercel ya parsea el JSON por nosotros si el header es correcto
-    // Pero como lo mandamos como 'text/plain', lo parseamos.
-    const body = JSON.parse(request.body);
+    // === CAMBIO CLAVE ===
+    // Vercel ya parsea el body si el Content-Type es 'application/json'
+    // Así que NO necesitamos JSON.parse()
+    const body = request.body;
+    
+    // Comprobamos que el payload existe
+    if (!body || !body.payload) {
+        throw new Error("Payload no encontrado en la petición.");
+    }
+
     const geminiPayload = body.payload;
     
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
@@ -49,19 +46,22 @@ export default async function handler(request, response) {
       body: JSON.stringify(geminiPayload),
     };
 
-    // 4. Llamamos a Gemini usando 'fetch' (que es global en Vercel)
+    // Llamamos a Gemini usando 'fetch'
     const geminiResponse = await fetch(url, options);
     const data = await geminiResponse.json();
 
     if (!geminiResponse.ok) {
+        // Si Google da un error, lo mostramos
         throw new Error(data.error?.message || 'Error al llamar a Gemini');
     }
 
-    // 5. Devolvemos la respuesta de Gemini a nuestro HTML
+    // Devolvemos la respuesta de Gemini a nuestro HTML
     return response.status(200).json(data);
 
   } catch (error) {
-    // Devolvemos un error
+    // Devolvemos un error claro
+    console.error("Error en el backend:", error.message); // Log para Vercel
     return response.status(500).json({ error: error.message });
   }
 }
+
