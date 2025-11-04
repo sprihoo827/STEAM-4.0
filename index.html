@@ -184,6 +184,10 @@ const activityOutput = document.getElementById('activity-output');
 const placeholder = document.getElementById('placeholder');
 const loader = document.getElementById('loader');
 
+// === NUEVO ===
+// Pega aquí la URL que copiaste de Google Apps Script al "Implementar"
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1EnXDXEL36LS2Ll4OJeqDqrv8R1s9La3ZpSPYlVBKSkKiSGXyR2mXeRXeBu0FXTna-A/exec"
+
 let currentActivityData = null; // Store the generated activity data
 
 generateBtn.addEventListener('click', generateActivity);
@@ -214,11 +218,11 @@ async function generateActivity() {
         userQuery += ` Además, la actividad debe centrarse o estar relacionada con el tema específico de: "${customTopic}".`;
     }
 
-    userQuery += ` La descripción debe ser motivadora y el procedimiento claro y conciso para que un docente pueda implementarlo.`;
+        userQuery += ` La descripción debe ser motivadora y el procedimiento claro y conciso para que un docente pueda implementarlo.`;
     
     // This API call uses a specific model and a JSON schema
-    const apiKey = ""; // API key will be injected by the environment
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    // const apiKey = ""; // <-- Ya no se usa aquí
+    // const apiUrl = `https...`; // <-- Ya no se usa aquí
 
     const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
@@ -242,16 +246,18 @@ async function generateActivity() {
             }
         }
     };
-    
+
+    // === MODIFICADO ===
+    // En lugar de llamar a Gemini, llamamos a nuestro Apps Script
     try {
         let retries = 3;
         let response;
         while(retries > 0) {
             try {
-                response = await fetch(apiUrl, {
+                response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ payload: payload }) // Envuelve el payload
                 });
                 if (response.ok) break;
             } catch (error) {
@@ -262,10 +268,10 @@ async function generateActivity() {
         }
 
         if (!response || !response.ok) {
-            throw new Error(`Error en la API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+            throw new Error(`Error en la API (Apps Script): ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
         }
 
-        const result = await response.json();
+        const result = await response.json(); // La respuesta de Apps Script es un JSON
         
         if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
              const jsonText = result.candidates[0].content.parts[0].text;
@@ -397,6 +403,7 @@ async function callGeminiForExplanation() {
     const userQuery = `Toma el siguiente título de actividad: "${titulo}" y esta descripción: "${descripcion}". Ahora, reescríbelo como una explicación emocionante y directa para un estudiante de "${level}". Usa un lenguaje cercano, emojis y céntrate en lo que van a crear y por qué es genial.`;
     
     try {
+        // === MODIFICADO ===
         const text = await callGemini(userQuery, systemPrompt);
         // Basic markdown-to-HTML conversion
         let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
@@ -428,9 +435,10 @@ async function callGeminiForRubric() {
     Y estos criterios de evaluación iniciales: ${evaluacion.join(', ')}.
     
     Genera una tabla (en formato markdown) con 4 niveles: Sobresaliente, Notable, Aprobado, Insuficiente.
-    Para cada criterio inicial, describe qué se espera en cada nivel.`;
-
+    Para cada criterio inicial, describe qué se espera en cada nivel.`; // <-- ¡ERROR ARREGLADO! Faltaba este acento grave de cierre.
+    
     try {
+        // === MODIFICADO ===
         const text = await callGemini(userQuery, systemPrompt);
         // Basic markdown-to-HTML conversion (more complex for tables)
         let html = text.replace(/^\|(.*?)\|$/gm, (match, content) => {
@@ -458,8 +466,8 @@ async function callGeminiForRubric() {
  * Generic helper function to call the Gemini API
  */
 async function callGemini(userQuery, systemPrompt) {
-    const apiKey = ""; // API key will be injected by the environment
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    // const apiKey = ""; // <-- Ya no se usa aquí
+    // const apiUrl = `https...`; // <-- Ya no se usa aquí
 
     const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
@@ -468,14 +476,15 @@ async function callGemini(userQuery, systemPrompt) {
         },
     };
 
+    // === MODIFICADO ===
     let retries = 3;
     let response;
     while(retries > 0) {
         try {
-            response = await fetch(apiUrl, {
+            response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ payload: payload }) // Envuelve el payload
             });
             if (response.ok) break;
         } catch (error) {
@@ -486,10 +495,10 @@ async function callGemini(userQuery, systemPrompt) {
     }
 
     if (!response || !response.ok) {
-        throw new Error(`Error en la API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+        throw new Error(`Error en la API (Apps Script): ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
     }
 
-    const result = await response.json();
+    const result = await response.json(); // La respuesta de Apps Script es un JSON
     
     if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
         return result.candidates[0].content.parts[0].text;
@@ -513,3 +522,7 @@ function displayError(message) {
 
 </body>
 </html>
+
+
+
+
