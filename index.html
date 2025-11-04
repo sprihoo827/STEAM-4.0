@@ -184,10 +184,6 @@ const placeholder = document.getElementById('placeholder');
 const loader = document.getElementById('loader');
 const specificTopicInput = document.getElementById('specific-topic'); // NUEVO
 
-// === ELIMINADO ===
-// Ya no necesitamos la URL de Google Apps Script
-// const APPS_SCRIPT_URL = "..."; 
-
 let currentActivityData = null; // Store the generated activity data
 
 generateBtn.addEventListener('click', generateActivity);
@@ -250,7 +246,8 @@ async function generateActivity() {
                 // Apuntamos a nuestro nuevo backend en Vercel
                 response = await fetch('/api/generate', { 
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' }, // Enviamos como texto para parsearlo en el backend
+                    // === CAMBIO CLAVE ===
+                    headers: { 'Content-Type': 'application/json' }, // Usamos JSON
                     body: JSON.stringify({ payload: payload }) // Envuelve el payload
                 });
                 if (response.ok) break;
@@ -267,7 +264,7 @@ async function generateActivity() {
 
         const result = await response.json(); 
 
-        if (result.error) {
+            // Aquí 'result.error' vendrá del backend si algo falló allí
             throw new Error(`Error en el Backend: ${result.error}`);
         }
         
@@ -444,7 +441,8 @@ async function callGemini(userQuery, systemPrompt) {
             // === CAMBIO CLAVE ===
             response = await fetch('/api/generate', { // Apunta a Vercel
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
+                // === CAMBIO CLAVE ===
+                headers: { 'Content-Type': 'application/json' }, // Usamos JSON
                 body: JSON.stringify({ payload: payload }) 
             });
             if (response.ok) break;
@@ -462,6 +460,7 @@ async function callGemini(userQuery, systemPrompt) {
     const result = await response.json(); 
 
     if (result.error) {
+        // Aquí 'result.error' vendrá del backend si algo falló allí
         throw new Error(`Error en el Backend: ${result.error}`);
     }
     
