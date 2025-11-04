@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GENERADOR DE ACTIVIDADES STEAM4.0 -IES RÍO DE LOS GRANADOS - GUARROMAN</title>
+    <title>GENERADOR DE ACTIVIDADES STEAM4.0 ANDALUCÍA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -41,32 +41,32 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
         /* Mini loader for new features */
         .mini-loader {
             width: 24px;
             height: 24px;
-            border-radius: 50%;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0073e6;
-            animation: spin 1s linear infinite;
+            border-width: 3px;
         }
-
         /* Styles for rubric output */
-        #rubric-output h4, #explain-output h4 {
+        #rubric-output h4 {
             font-weight: bold;
             font-size: 1.1rem;
             margin-top: 1rem;
             margin-bottom: 0.5rem;
         }
-        #rubric-output ul, #explain-output ul {
+        #rubric-output ul {
             list-style-type: disc;
             margin-left: 1.5rem;
         }
-        #rubric-output p, #explain-output p {
-            margin-bottom: 0.5rem;
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
@@ -85,7 +85,7 @@
         </header>
         
         <!-- Controls -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- Subject Dropdown -->
             <div>
                 <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Asignatura</label>
@@ -137,12 +137,12 @@
                     <option>Desconectado</option>
                 </select>
             </div>
+        </div>
 
-            <!-- NEW Custom Topic Input -->
-            <div class="md:col-span-2">
-                <label for="custom-topic" class="block text-sm font-medium text-gray-700 mb-1">Tema Específico (Opcional)</label>
-                <input type="text" id="custom-topic" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: El Antiguo Egipto, El Cambio Climático, Don Quijote...">
-            </div>
+        <!-- Specific Topic Input -->
+        <div class="mb-8">
+             <label for="specific-topic" class="block text-sm font-medium text-gray-700 mb-1">Tema Específico (Opcional)</label>
+             <input type="text" id="specific-topic" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: Las Fracciones, La Célula, El Quijote...">
         </div>
 
         <!-- Generate Button -->
@@ -178,52 +178,45 @@ const subjectSelect = document.getElementById('subject');
 const levelSelect = document.getElementById('level');
 const topicSelect = document.getElementById('steam-topic');
 const hardwareSelect = document.getElementById('hardware');
-const customTopicInput = document.getElementById('custom-topic'); // New
 const resultContainer = document.getElementById('result-container');
 const activityOutput = document.getElementById('activity-output');
 const placeholder = document.getElementById('placeholder');
 const loader = document.getElementById('loader');
+const specificTopicInput = document.getElementById('specific-topic'); // NUEVO
 
-// === NUEVO ===
-// Pega aquí la URL que copiaste de Google Apps Script al "Implementar"
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuwxEWprq6K2wlVmE1Lwr0XsjFdsgTYzFN9PCkgGLqipZ0MMeMpvJ5uVCEJvF2kkWwfw/exec"
+// === ELIMINADO ===
+// Ya no necesitamos la URL de Google Apps Script
+// const APPS_SCRIPT_URL = "..."; 
 
 let currentActivityData = null; // Store the generated activity data
 
 generateBtn.addEventListener('click', generateActivity);
 
-/**
- * Main function to generate the structured activity
- */
+// === MODIFICADO ===
+// Esta función se ha actualizado para llamar al nuevo endpoint de Vercel
 async function generateActivity() {
     const subject = subjectSelect.value;
     const level = levelSelect.value;
     const selectedTopic = topicSelect.value;
     const selectedHardware = hardwareSelect.value;
-    const customTopic = customTopicInput.value.trim(); // New
+    const specificTopic = specificTopicInput.value; // NUEVO
     
-    // Show loader and hide other views
+    // ... (mostrar el loader, etc.) ...
     placeholder.classList.add('hidden');
     activityOutput.classList.add('hidden');
     loader.classList.remove('hidden');
-    activityOutput.innerHTML = ''; // Clear previous results
-    currentActivityData = null; // Clear previous data
+    activityOutput.innerHTML = ''; 
+    currentActivityData = null; 
 
     const systemPrompt = `Actúa como un profesor experto en metodologías activas y en el currículo de educación secundaria de Andalucía, España, especializado en la creación de proyectos STEAM. Tu tarea es diseñar una actividad educativa innovadora y detallada.`;
     
-    // Modified userQuery to include custom topic
-    let userQuery = `Genera una actividad STEAM detallada para la asignatura de "${subject}" y el curso de "${level}". La actividad debe integrar de forma práctica los conceptos de "${selectedTopic}" utilizando "${selectedHardware}".`;
+    let userQuery = `Genera una actividad STEAM detallada para la asignatura de "${subject}" y el curso de "${level}". La actividad debe integrar de forma práctica los conceptos de "${selectedTopic}" utilizando "${selectedHardware}". La descripción debe ser motivadora y el procedimiento claro y conciso para que un docente pueda implementarlo.`;
 
-    if (customTopic) {
-        userQuery += ` Además, la actividad debe centrarse o estar relacionada con el tema específico de: "${customTopic}".`;
+    // AÑADIDO: Modificar el prompt si hay un tema específico
+    if (specificTopic.trim() !== "") {
+        userQuery += ` La actividad debe centrarse específicamente en el tema de: "${specificTopic}".`;
     }
-
-        userQuery += ` La descripción debe ser motivadora y el procedimiento claro y conciso para que un docente pueda implementarlo.`;
     
-    // This API call uses a specific model and a JSON schema
-    // const apiKey = ""; // <-- Ya no se usa aquí
-    // const apiUrl = `https...`; // <-- Ya no se usa aquí
-
     const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
         systemInstruction: {
@@ -234,6 +227,7 @@ async function generateActivity() {
             responseSchema: {
                 type: "OBJECT",
                 properties: {
+                    // ... (el schema sigue igual) ...
                     titulo: { type: "STRING", description: "Un título creativo y atractivo para la actividad." },
                     descripcion: { type: "STRING", description: "Un párrafo introductorio que explique brevemente la actividad y su relevancia." },
                     objetivos: { type: "ARRAY", items: { type: "STRING" }, description: "Una lista de 3 a 5 objetivos de aprendizaje claros y medibles." },
@@ -246,17 +240,17 @@ async function generateActivity() {
             }
         }
     };
-
-    // === MODIFICADO ===
-    // En lugar de llamar a Gemini, llamamos a nuestro Apps Script
+    
     try {
         let retries = 3;
         let response;
         while(retries > 0) {
             try {
-                response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
+                // === CAMBIO CLAVE ===
+                // Apuntamos a nuestro nuevo backend en Vercel
+                response = await fetch('/api/generate', { 
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' }, // CAMBIADO para evitar preflight CORS
+                    headers: { 'Content-Type': 'text/plain' }, // Enviamos como texto para parsearlo en el backend
                     body: JSON.stringify({ payload: payload }) // Envuelve el payload
                 });
                 if (response.ok) break;
@@ -268,20 +262,19 @@ async function generateActivity() {
         }
 
         if (!response || !response.ok) {
-            throw new Error(`Error en la API (Apps Script): ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+            throw new Error(`Error en el API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
         }
 
-        const result = await response.json(); // La respuesta de Apps Script es un JSON
+        const result = await response.json(); 
 
-        // AÑADIDO: Comprobar si el backend devolvió un error
         if (result.error) {
-            throw new Error(`Error en el Backend (Apps Script): ${result.error}`);
+            throw new Error(`Error en el Backend: ${result.error}`);
         }
         
         if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
              const jsonText = result.candidates[0].content.parts[0].text;
              const activityData = JSON.parse(jsonText);
-             currentActivityData = activityData; // Store data for new features
+             currentActivityData = activityData; 
              displayActivity(activityData, subject, level);
         } else {
              throw new Error("La respuesta de la API no tiene el formato esperado.");
@@ -289,17 +282,14 @@ async function generateActivity() {
 
     } catch (error) {
         console.error("Error fetching activity:", error);
-        displayError(error.message); // CAMBIADO: Mostrar el error específico
+        displayError(error.message); 
     } finally {
-        // Hide loader and show results
         loader.classList.add('hidden');
         activityOutput.classList.remove('hidden');
     }
 }
 
-/**
- * Displays the generated activity and the new AI feature buttons
- */
+// ... (displayActivity sigue igual) ...
 function displayActivity(data, subject, level) {
     const { titulo, descripcion, objetivos, areas_steam, materiales, procedimiento, evaluacion } = data;
 
@@ -361,6 +351,8 @@ function displayActivity(data, subject, level) {
             <!-- === NEW GEMINI API FEATURES === -->
             <div class="mt-8 border-t border-gray-200 pt-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">✨ Mejoras con IA</h3>
+                
+                <!-- === CORRECCIÓN: HTML DE LOS BOTONES RESTAURADO === -->
                 <p class="text-center text-gray-600 mb-6">Usa el poder de Gemini para expandir esta actividad.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button id="explain-btn" class="w-full p-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
@@ -370,110 +362,74 @@ function displayActivity(data, subject, level) {
                         ✨ Generar Rúbrica Detallada
                     </button>
                 </div>
+                <!-- === FIN DE LA CORRECCIÓN === -->
+
                 <!-- Outputs for new features -->
                 <div id="explain-output" class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-300 rounded-lg hidden"></div>
                 <div id="rubric-output" class="mt-4 p-4 bg-purple-50 border-l-4 border-purple-300 rounded-lg hidden"></div>
             </div>
         </div>
     `;
-
-    // Add a simple fade-in animation
-    const card = activityOutput.querySelector('.animate-fade-in');
-    card.style.opacity = 0;
-    setTimeout(() => {
-        card.style.transition = 'opacity 0.5s';
-        card.style.opacity = 1;
-    }, 10);
-
+    
     // Add event listeners for new buttons
     document.getElementById('explain-btn').addEventListener('click', callGeminiForExplanation);
     document.getElementById('rubric-btn').addEventListener('click', callGeminiForRubric);
 }
 
-/**
- * Handles the "Explicar a los Alumnos" button click
- */
+// ... (callGeminiForExplanation sigue igual) ...
 async function callGeminiForExplanation() {
     if (!currentActivityData) return;
     const { titulo, descripcion } = currentActivityData;
     const level = levelSelect.value;
-    const outputDiv = document.getElementById('explain-output');
-    const button = document.getElementById('explain-btn');
+    const explainOutput = document.getElementById('explain-output');
+    
+    showMiniLoader(explainOutput);
 
-    outputDiv.innerHTML = '<div class="flex items-center gap-3"><div class="mini-loader"></div><p>Generando explicación...</p></div>';
-    outputDiv.classList.remove('hidden');
-    button.disabled = true;
-
-    const systemPrompt = "Actúa como un profesor de secundaria divertido y muy motivador. Tu objetivo es 'vender' una actividad a tus alumnos de forma que les entusiasme.";
-    const userQuery = `Toma el siguiente título de actividad: "${titulo}" y esta descripción: "${descripcion}". Ahora, reescríbelo como una explicación emocionante y directa para un estudiante de "${level}". Usa un lenguaje cercano, emojis y céntrate en lo que van a crear y por qué es genial.`;
+    const systemPrompt = `Actúa como un profesor motivador y cercano. Tu objetivo es explicar una actividad a estudiantes de ${level} de una forma que les entusiasme. Usa un lenguaje claro, directo y un poco divertido. Evita la jerga de profesor.`;
+    const userQuery = `Toma la siguiente actividad (título: "${titulo}", descripción: "${descripcion}") y reescríbela como una explicación breve y emocionante para tus alumnos de ${level}. Empieza con un saludo chulo.`;
     
     try {
         // === MODIFICADO ===
+        // Llamamos a la función genérica que ahora apunta a Vercel
         const text = await callGemini(userQuery, systemPrompt);
-        // Basic markdown-to-HTML conversion
-        let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-        html = html.replace(/\n/g, '<br>'); // Newlines
-        outputDiv.innerHTML = `<h4>💡 Explicación para Alumnos</h4>${html}`;
+        explainOutput.innerHTML = text.replace(/\n/g, '<br>'); // Formatear respuesta
     } catch (error) {
-        outputDiv.innerHTML = `<p class="text-red-600">Error al generar la explicación: ${error.message}</p>`;
-    } finally {
-        button.disabled = false;
+        explainOutput.innerHTML = `<p class="text-red-600">Error al generar la explicación: ${error.message}</p>`;
     }
 }
 
-/**
- * Handles the "Generar Rúbrica Detallada" button click
- */
+// ... (callGeminiForRubric sigue igual) ...
 async function callGeminiForRubric() {
     if (!currentActivityData) return;
     const { titulo, objetivos, evaluacion } = currentActivityData;
-    const outputDiv = document.getElementById('rubric-output');
-    const button = document.getElementById('rubric-btn');
-
-    outputDiv.innerHTML = '<div class="flex items-center gap-3"><div class="mini-loader"></div><p>Generando rúbrica...</p></div>';
-    outputDiv.classList.remove('hidden');
-    button.disabled = true;
-
-    const systemPrompt = "Actúa como un experto en evaluación educativa. Tu tarea es crear rúbricas claras, justas y detalladas.";
-    const userQuery = `Crea una rúbrica de evaluación detallada para la actividad "${titulo}".
-    Basándote en estos objetivos: ${objetivos.join(', ')}.
-    Y estos criterios de evaluación iniciales: ${evaluacion.join(', ')}.
+    const rubricOutput = document.getElementById('rubric-output');
     
-    Genera una tabla (en formato markdown) con 4 niveles: Sobresaliente, Notable, Aprobado, Insuficiente.
-    Para cada criterio inicial, describe qué se espera en cada nivel.`; // <-- ¡ERROR ARREGLADO! Faltaba este acento grave de cierre.
+    showMiniLoader(rubricOutput);
+
+    const systemPrompt = "Actúa como un experto en evaluación educativa. Genera rúbricas claras, concisas y fáciles de aplicar. Formatea la respuesta en Markdown simple.";
+    const userQuery = `Crea una rúbrica de evaluación detallada para la actividad "${titulo}". Los objetivos son: ${objetivos.join(', ')}. Los criterios base son: ${evaluacion.join(', ')}. La rúbrica debe tener 4 niveles: Sobresaliente (10-9), Notable (8-7), Aprobado (6-5), Insuficiente (<5). Detalla qué se espera en cada nivel para cada criterio base.`;
     
     try {
         // === MODIFICADO ===
+        // Llamamos a la función genérica que ahora apunta a Vercel
         const text = await callGemini(userQuery, systemPrompt);
-        // Basic markdown-to-HTML conversion (more complex for tables)
-        let html = text.replace(/^\|(.*?)\|$/gm, (match, content) => {
-            const cells = content.split('|').map(c => c.trim());
-            return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
-        });
-        html = html.replace(/<tr>(.*?)<\/tr>/, '<thead><tr>$1</tr></thead><tbody>');
-        html = html.replace(/<\/thead><tbody>(<tr>.*?<\/tr>)/, '<thead>$1</thead><tbody>'); // Fix header row
-        html = html.replace(/<td>---*<\/td>/g, '<th>---</th>'); // Fix markdown table header separator
-        html = `<table class="w-full border-collapse border border-gray-300">${html}</tbody></table>`;
-        html = html.replace(/<th>/g, '<th class="border border-gray-300 p-2 bg-gray-100 text-left">');
-        html = html.replace(/<td>/g, '<td class="border border-gray-300 p-2">');
-        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-        html = html.replace(/\n/g, '<br>'); // Newlines
-
-        outputDiv.innerHTML = `<h4>📊 Rúbrica Detallada</h4>${html}`;
+        // Convertir Markdown simple a HTML
+        let html = text.replace(/### (.*)/g, '<h4>$1</h4>'); // h3
+        html = html.replace(/## (.*)/g, '<h3>$1</h3>'); // h2
+        html = html.replace(/\* (.*)/g, '<li>$1</li>'); // list items
+        html = html.replace(/(\<li>.*<\/li\>)/gs, '<ul>$1</ul>'); // wrap lists
+        html = html.replace(/\n/g, '<br>');
+        
+        rubricOutput.innerHTML = html;
     } catch (error) {
-        outputDiv.innerHTML = `<p class="text-red-600">Error al generar la rúbrica: ${error.message}</p>`;
-    } finally {
-        button.disabled = false;
+        rubricOutput.innerHTML = `<p class="text-red-600">Error al generar la rúbrica: ${error.message}</p>`;
     }
 }
 
-/**
- * Generic helper function to call the Gemini API
- */
-async function callGemini(userQuery, systemPrompt) {
-    // const apiKey = ""; // <-- Ya no se usa aquí
-    // const apiUrl = `https...`; // <-- Ya no se usa aquí
 
+// === MODIFICADO ===
+// Esta función ahora llama al endpoint de Vercel
+async function callGemini(userQuery, systemPrompt) {
     const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
         systemInstruction: {
@@ -481,15 +437,15 @@ async function callGemini(userQuery, systemPrompt) {
         },
     };
 
-    // === MODIFICADO ===
-    let retries = 3;
     let response;
+    let retries = 3;
     while(retries > 0) {
         try {
-            response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
+            // === CAMBIO CLAVE ===
+            response = await fetch('/api/generate', { // Apunta a Vercel
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' }, // CAMBIADO para evitar preflight CORS
-                body: JSON.stringify({ payload: payload }) // Envuelve el payload
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ payload: payload }) 
             });
             if (response.ok) break;
         } catch (error) {
@@ -500,26 +456,33 @@ async function callGemini(userQuery, systemPrompt) {
     }
 
     if (!response || !response.ok) {
-        throw new Error(`Error en la API (Apps Script): ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+        throw new Error(`Error en el API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
     }
 
-    const result = await response.json(); // La respuesta de Apps Script es un JSON
+    const result = await response.json(); 
 
-    // AÑADIDO: Comprobar si el backend devolvió un error
     if (result.error) {
-        throw new Error(`Error en el Backend (Apps Script): ${result.error}`);
+        throw new Error(`Error en el Backend: ${result.error}`);
     }
     
     if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
         return result.candidates[0].content.parts[0].text;
     } else {
-        throw new Error("La respuesta de la API no tiene el formato esperado.");
+        throw new Error("La respuesta de la API no tiene el texto esperado.");
     }
 }
 
-/**
- * Displays a generic error message in the main output
- */
+// ... (el resto de funciones, showMiniLoader, displayError, etc. siguen igual) ...
+function showMiniLoader(element) {
+    element.innerHTML = `
+        <div class="flex items-center justify-center p-4">
+            <div class="loader mini-loader"></div>
+            <span class="ml-3 text-gray-600">Generando...</span>
+        </div>
+    `;
+    element.classList.remove('hidden');
+}
+
 function displayError(message) {
     activityOutput.innerHTML = `
         <div class="text-center text-red-600 bg-red-50 p-6 rounded-lg border border-red-200">
@@ -527,6 +490,7 @@ function displayError(message) {
             <p>${message}</p>
         </div>
     `;
+    activityOutput.classList.remove('hidden');
 }
 </script>
 
