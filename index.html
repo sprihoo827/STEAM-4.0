@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENERADOR DE ACTIVIDADES STEAM4.0 ANDALUCÍA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0054a6, #00a0e2); /* Gradient with Andalusian colors theme */
+        }
+        .card-content ul {
+            list-style-position: inside;
+        }
+        .card-content ul li {
+            position: relative;
+            padding-left: 1.5rem; /* Space for the icon */
+            margin-bottom: 0.5rem;
+        }
+        .card-content ul li::before {
+            content: '✓'; /* Checkmark icon */
+            position: absolute;
+            left: 0;
+            color: #16a34a; /* Green color */
+            font-weight: bold;
+        }
+        /* Custom spinner */
+        .loader {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #0073e6;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mini loader for new features */
+        .mini-loader {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0073e6;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Styles for rubric output */
+        #rubric-output h4, #explain-output h4 {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        #rubric-output ul, #explain-output ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+        }
+        #rubric-output p, #explain-output p {
+            margin-bottom: 0.5rem;
+        }
+
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="flex justify-center items-center gap-4">
+                 <svg class="w-12 h-12 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.923-2.923L12 17.25l1.178-.398a3.375 3.375 0 002.923-2.923L16.5 12.75l.398 1.178a3.375 3.375 0 002.923 2.923L21 17.25l-1.178.398a3.375 3.375 0 00-2.923 2.923z" />
+                </svg>
+                <h1 class="text-2xl md:text-4xl font-bold text-gray-800">Generador de Actividades STEAM 4.0 Andalucía</h1>
+            </div>
+            <p class="text-gray-500 mt-2">Selecciona una asignatura y un curso para generar una actividad innovadora.</p>
+        </header>
+        
+        <!-- Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Subject Dropdown -->
+            <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Asignatura</label>
+                <select id="subject" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option>Matemáticas</option>
+                    <option>Física y Química</option>
+                    <option>Biología y Geología</option>
+                    <option>Tecnología y Digitalización</option>
+                    <option>Educación Plástica, Visual y Audiovisual</option>
+                    <option>Música</option>
+                    <option>Lengua Castellana y Literatura</option>
+                    <option>Geografía e Historia</option>
+                    <option>Inglés</option>
+                    <option>Educación Física</option>
+                </select>
+            </div>
+            
+            <!-- Course Level Dropdown -->
+            <div>
+                <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
+                <select id="level" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option>1º ESO</option>
+                    <option>2º ESO</option>
+                    <option>3º ESO</option>
+                    <option>4º ESO</option>
+                </select>
+            </div>
+
+            <!-- STEAM Topic Dropdown -->
+            <div>
+                <label for="steam-topic" class="block text-sm font-medium text-gray-700 mb-1">Área STEAM</label>
+                <select id="steam-topic" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option>Programación y Pensamiento Computacional</option>
+                    <option>Robótica Educativa</option>
+                    <option>Inteligencia Artificial y Machine Learning</option>
+                </select>
+            </div>
+
+            <!-- Hardware Dropdown -->
+            <div>
+                <label for="hardware" class="block text-sm font-medium text-gray-700 mb-1">Hardware/Software</label>
+                <select id="hardware" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option>Tarjetas Micro:bit</option>
+                    <option>Inteligencia Artificial</option>
+                    <option>Scratch</option>
+                    <option>App Inventor</option>
+                    <option>MakeCode Arcade</option>
+                    <option>Robot Maqueen</option>
+                    <option>Desconectado</option>
+                </select>
+            </div>
+
+            <!-- NEW Custom Topic Input -->
+            <div class="md:col-span-2">
+                <label for="custom-topic" class="block text-sm font-medium text-gray-700 mb-1">Tema Específico (Opcional)</label>
+                <input type="text" id="custom-topic" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ej: El Antiguo Egipto, El Cambio Climático, Don Quijote...">
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center">
+            <button id="generate-btn" class="w-full md:w-1/2 p-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105 flex items-center justify-center gap-2 mx-auto">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.311a12.06 12.06 0 00-4.5 0m1.875-1.121a3.375 3.375 0 00-1.529-1.529L6.625 12l1.63-1.02a3.375 3.375 0 001.529-1.529L10.875 6l1.02 1.625a3.375 3.375 0 001.529 1.529L15.375 12l-1.63 1.02a3.375 3.375 0 00-1.529 1.529L12 18.375z" />
+                </svg>
+                <span>Generar Actividad</span>
+            </button>
+        </div>
+
+        <!-- Result Area -->
+        <div id="result-container" class="mt-8">
+             <div id="placeholder" class="text-center text-gray-400 py-12 px-6 border-2 border-dashed border-gray-300 rounded-lg">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-semibold text-gray-900">La actividad aparecerá aquí</h3>
+                <p class="mt-1 text-sm text-gray-500">Elige tus opciones y pulsa "Generar Actividad".</p>
+            </div>
+            <div id="loader" class="hidden flex flex-col items-center justify-center py-12">
+                <div class="loader"></div>
+                <p class="mt-4 text-gray-600 font-medium">Generando una actividad creativa...</p>
+            </div>
+            <div id="activity-output" class="hidden"></div>
+        </div>
+    </div>
+
+<script>
+const generateBtn = document.getElementById('generate-btn');
+const subjectSelect = document.getElementById('subject');
+const levelSelect = document.getElementById('level');
+const topicSelect = document.getElementById('steam-topic');
+const hardwareSelect = document.getElementById('hardware');
+const customTopicInput = document.getElementById('custom-topic'); // New
+const resultContainer = document.getElementById('result-container');
+const activityOutput = document.getElementById('activity-output');
+const placeholder = document.getElementById('placeholder');
+const loader = document.getElementById('loader');
+
+let currentActivityData = null; // Store the generated activity data
+
+generateBtn.addEventListener('click', generateActivity);
+
+/**
+ * Main function to generate the structured activity
+ */
+async function generateActivity() {
+    const subject = subjectSelect.value;
+    const level = levelSelect.value;
+    const selectedTopic = topicSelect.value;
+    const selectedHardware = hardwareSelect.value;
+    const customTopic = customTopicInput.value.trim(); // New
+    
+    // Show loader and hide other views
+    placeholder.classList.add('hidden');
+    activityOutput.classList.add('hidden');
+    loader.classList.remove('hidden');
+    activityOutput.innerHTML = ''; // Clear previous results
+    currentActivityData = null; // Clear previous data
+
+    const systemPrompt = `Actúa como un profesor experto en metodologías activas y en el currículo de educación secundaria de Andalucía, España, especializado en la creación de proyectos STEAM. Tu tarea es diseñar una actividad educativa innovadora y detallada.`;
+    
+    // Modified userQuery to include custom topic
+    let userQuery = `Genera una actividad STEAM detallada para la asignatura de "${subject}" y el curso de "${level}". La actividad debe integrar de forma práctica los conceptos de "${selectedTopic}" utilizando "${selectedHardware}".`;
+
+    if (customTopic) {
+        userQuery += ` Además, la actividad debe centrarse o estar relacionada con el tema específico de: "${customTopic}".`;
+    }
+
+    userQuery += ` La descripción debe ser motivadora y el procedimiento claro y conciso para que un docente pueda implementarlo.`;
+    
+    // This API call uses a specific model and a JSON schema
+    const apiKey = ""; // API key will be injected by the environment
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+    const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: {
+            parts: [{ text: systemPrompt }]
+        },
+        generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: "OBJECT",
+                properties: {
+                    titulo: { type: "STRING", description: "Un título creativo y atractivo para la actividad." },
+                    descripcion: { type: "STRING", description: "Un párrafo introductorio que explique brevemente la actividad y su relevancia." },
+                    objetivos: { type: "ARRAY", items: { type: "STRING" }, description: "Una lista de 3 a 5 objetivos de aprendizaje claros y medibles." },
+                    areas_steam: { type: "ARRAY", items: { type: "STRING" }, description: "Lista de las áreas STEAM (Ciencia, Tecnología, Ingeniería, Arte, Matemáticas) que se trabajan." },
+                    materiales: { type: "ARRAY", items: { type: "STRING" }, description: "Una lista de todos los materiales necesarios, incluyendo el hardware específico y software." },
+                    procedimiento: { type: "ARRAY", items: { type: "STRING" }, description: "Una lista de pasos detallados a seguir, desde la introducción hasta la presentación final. Debe ser fácil de seguir." },
+                    evaluacion: { type: "ARRAY", items: { type: "STRING" }, description: "Una lista de 3 a 4 criterios de evaluación claros y concisos." }
+                },
+                required: ["titulo", "descripcion", "objetivos", "areas_steam", "materiales", "procedimiento", "evaluacion"]
+            }
+        }
+    };
+    
+    try {
+        let retries = 3;
+        let response;
+        while(retries > 0) {
+            try {
+                response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) break;
+            } catch (error) {
+                // Network error, retry
+            }
+            retries--;
+            if (retries > 0) await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+        }
+
+        if (!response || !response.ok) {
+            throw new Error(`Error en la API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+             const jsonText = result.candidates[0].content.parts[0].text;
+             const activityData = JSON.parse(jsonText);
+             currentActivityData = activityData; // Store data for new features
+             displayActivity(activityData, subject, level);
+        } else {
+             throw new Error("La respuesta de la API no tiene el formato esperado.");
+        }
+
+    } catch (error) {
+        console.error("Error fetching activity:", error);
+        displayError("No se pudo generar la actividad. Por favor, inténtalo de nuevo más tarde.");
+    } finally {
+        // Hide loader and show results
+        loader.classList.add('hidden');
+        activityOutput.classList.remove('hidden');
+    }
+}
+
+/**
+ * Displays the generated activity and the new AI feature buttons
+ */
+function displayActivity(data, subject, level) {
+    const { titulo, descripcion, objetivos, areas_steam, materiales, procedimiento, evaluacion } = data;
+
+    activityOutput.innerHTML = `
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 animate-fade-in">
+            <!-- Title and Subtitle -->
+            <h2 class="text-2xl font-bold text-blue-800 mb-2">${titulo}</h2>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">${subject}</span>
+                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">${level}</span>
+            </div>
+
+            <!-- Description -->
+            <p class="text-gray-700 mb-6">${descripcion}</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 border-l-4 border-blue-500 pl-3 mb-3">🎯 Objetivos de Aprendizaje</h3>
+                    <div class="card-content">
+                        <ul class="text-gray-600">${objetivos.map(o => `<li>${o}</li>`).join('')}</ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-800 border-l-4 border-blue-500 pl-3 mt-6 mb-3">🛠️ Materiales Necesarios</h3>
+                    <div class="card-content">
+                        <ul class="text-gray-600">${materiales.map(m => `<li>${m}</li>`).join('')}</ul>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 border-l-4 border-blue-500 pl-3 mb-3">🔬 Áreas STEAM</h3>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                       ${areas_steam.map(a => `<span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">${a}</span>`).join('')}
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-800 border-l-4 border-blue-500 pl-3 mb-3">📝 Criterios de Evaluación</h3>
+                    <div class="card-content">
+                        <ul class="text-gray-600">${evaluacion.map(e => `<li>${e}</li>`).join('')}</ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Procedure -->
+            <div class="mt-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">📋 Procedimiento Paso a Paso</h3>
+                <ol class="relative border-l border-gray-200 dark:border-gray-700 ml-4">                  
+                    ${procedimiento.map((step, index) => `
+                    <li class="mb-6 ml-6">            
+                        <span class="absolute flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full -left-4 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <span class="font-bold text-blue-800">${index + 1}</span>
+                        </span>
+                        <p class="text-gray-700">${step}</p>
+                    </li>
+                    `).join('')}
+                </ol>
+            </div>
+
+            <!-- === NEW GEMINI API FEATURES === -->
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">✨ Mejoras con IA</h3>
+                <p class="text-center text-gray-600 mb-6">Usa el poder de Gemini para expandir esta actividad.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button id="explain-btn" class="w-full p-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                        ✨ Explicar a los Alumnos
+                    </button>
+                    <button id="rubric-btn" class="w-full p-3 bg-purple-600 text-white font-bold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                        ✨ Generar Rúbrica Detallada
+                    </button>
+                </div>
+                <!-- Outputs for new features -->
+                <div id="explain-output" class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-300 rounded-lg hidden"></div>
+                <div id="rubric-output" class="mt-4 p-4 bg-purple-50 border-l-4 border-purple-300 rounded-lg hidden"></div>
+            </div>
+        </div>
+    `;
+
+    // Add a simple fade-in animation
+    const card = activityOutput.querySelector('.animate-fade-in');
+    card.style.opacity = 0;
+    setTimeout(() => {
+        card.style.transition = 'opacity 0.5s';
+        card.style.opacity = 1;
+    }, 10);
+
+    // Add event listeners for new buttons
+    document.getElementById('explain-btn').addEventListener('click', callGeminiForExplanation);
+    document.getElementById('rubric-btn').addEventListener('click', callGeminiForRubric);
+}
+
+/**
+ * Handles the "Explicar a los Alumnos" button click
+ */
+async function callGeminiForExplanation() {
+    if (!currentActivityData) return;
+    const { titulo, descripcion } = currentActivityData;
+    const level = levelSelect.value;
+    const outputDiv = document.getElementById('explain-output');
+    const button = document.getElementById('explain-btn');
+
+    outputDiv.innerHTML = '<div class="flex items-center gap-3"><div class="mini-loader"></div><p>Generando explicación...</p></div>';
+    outputDiv.classList.remove('hidden');
+    button.disabled = true;
+
+    const systemPrompt = "Actúa como un profesor de secundaria divertido y muy motivador. Tu objetivo es 'vender' una actividad a tus alumnos de forma que les entusiasme.";
+    const userQuery = `Toma el siguiente título de actividad: "${titulo}" y esta descripción: "${descripcion}". Ahora, reescríbelo como una explicación emocionante y directa para un estudiante de "${level}". Usa un lenguaje cercano, emojis y céntrate en lo que van a crear y por qué es genial.`;
+    
+    try {
+        const text = await callGemini(userQuery, systemPrompt);
+        // Basic markdown-to-HTML conversion
+        let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+        html = html.replace(/\n/g, '<br>'); // Newlines
+        outputDiv.innerHTML = `<h4>💡 Explicación para Alumnos</h4>${html}`;
+    } catch (error) {
+        outputDiv.innerHTML = `<p class="text-red-600">Error al generar la explicación: ${error.message}</p>`;
+    } finally {
+        button.disabled = false;
+    }
+}
+
+/**
+ * Handles the "Generar Rúbrica Detallada" button click
+ */
+async function callGeminiForRubric() {
+    if (!currentActivityData) return;
+    const { titulo, objetivos, evaluacion } = currentActivityData;
+    const outputDiv = document.getElementById('rubric-output');
+    const button = document.getElementById('rubric-btn');
+
+    outputDiv.innerHTML = '<div class="flex items-center gap-3"><div class="mini-loader"></div><p>Generando rúbrica...</p></div>';
+    outputDiv.classList.remove('hidden');
+    button.disabled = true;
+
+    const systemPrompt = "Actúa como un experto en evaluación educativa. Tu tarea es crear rúbricas claras, justas y detalladas.";
+    const userQuery = `Crea una rúbrica de evaluación detallada para la actividad "${titulo}".
+    Basándote en estos objetivos: ${objetivos.join(', ')}.
+    Y estos criterios de evaluación iniciales: ${evaluacion.join(', ')}.
+    
+    Genera una tabla (en formato markdown) con 4 niveles: Sobresaliente, Notable, Aprobado, Insuficiente.
+    Para cada criterio inicial, describe qué se espera en cada nivel.`;
+
+    try {
+        const text = await callGemini(userQuery, systemPrompt);
+        // Basic markdown-to-HTML conversion (more complex for tables)
+        let html = text.replace(/^\|(.*?)\|$/gm, (match, content) => {
+            const cells = content.split('|').map(c => c.trim());
+            return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
+        });
+        html = html.replace(/<tr>(.*?)<\/tr>/, '<thead><tr>$1</tr></thead><tbody>');
+        html = html.replace(/<\/thead><tbody>(<tr>.*?<\/tr>)/, '<thead>$1</thead><tbody>'); // Fix header row
+        html = html.replace(/<td>---*<\/td>/g, '<th>---</th>'); // Fix markdown table header separator
+        html = `<table class="w-full border-collapse border border-gray-300">${html}</tbody></table>`;
+        html = html.replace(/<th>/g, '<th class="border border-gray-300 p-2 bg-gray-100 text-left">');
+        html = html.replace(/<td>/g, '<td class="border border-gray-300 p-2">');
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+        html = html.replace(/\n/g, '<br>'); // Newlines
+
+        outputDiv.innerHTML = `<h4>📊 Rúbrica Detallada</h4>${html}`;
+    } catch (error) {
+        outputDiv.innerHTML = `<p class="text-red-600">Error al generar la rúbrica: ${error.message}</p>`;
+    } finally {
+        button.disabled = false;
+    }
+}
+
+/**
+ * Generic helper function to call the Gemini API
+ */
+async function callGemini(userQuery, systemPrompt) {
+    const apiKey = ""; // API key will be injected by the environment
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+    const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: {
+            parts: [{ text: systemPrompt }]
+        },
+    };
+
+    let retries = 3;
+    let response;
+    while(retries > 0) {
+        try {
+            response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) break;
+        } catch (error) {
+            // Network error
+        }
+        retries--;
+        if (retries > 0) await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+    }
+
+    if (!response || !response.ok) {
+        throw new Error(`Error en la API: ${response ? response.statusText : 'No se pudo obtener respuesta'}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
+        return result.candidates[0].content.parts[0].text;
+    } else {
+        throw new Error("La respuesta de la API no tiene el formato esperado.");
+    }
+}
+
+/**
+ * Displays a generic error message in the main output
+ */
+function displayError(message) {
+    activityOutput.innerHTML = `
+        <div class="text-center text-red-600 bg-red-50 p-6 rounded-lg border border-red-200">
+            <h3 class="font-bold text-lg">¡Vaya! Algo salió mal</h3>
+            <p>${message}</p>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
