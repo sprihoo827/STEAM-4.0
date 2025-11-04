@@ -256,7 +256,7 @@ async function generateActivity() {
             try {
                 response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain' }, // CAMBIADO para evitar preflight CORS
                     body: JSON.stringify({ payload: payload }) // Envuelve el payload
                 });
                 if (response.ok) break;
@@ -272,6 +272,11 @@ async function generateActivity() {
         }
 
         const result = await response.json(); // La respuesta de Apps Script es un JSON
+
+        // AÑADIDO: Comprobar si el backend devolvió un error
+        if (result.error) {
+            throw new Error(`Error en el Backend (Apps Script): ${result.error}`);
+        }
         
         if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
              const jsonText = result.candidates[0].content.parts[0].text;
@@ -284,7 +289,7 @@ async function generateActivity() {
 
     } catch (error) {
         console.error("Error fetching activity:", error);
-        displayError("No se pudo generar la actividad. Por favor, inténtalo de nuevo más tarde.");
+        displayError(error.message); // CAMBIADO: Mostrar el error específico
     } finally {
         // Hide loader and show results
         loader.classList.add('hidden');
@@ -483,7 +488,7 @@ async function callGemini(userQuery, systemPrompt) {
         try {
             response = await fetch(APPS_SCRIPT_URL, { // Usa la nueva URL
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' }, // CAMBIADO para evitar preflight CORS
                 body: JSON.stringify({ payload: payload }) // Envuelve el payload
             });
             if (response.ok) break;
@@ -499,6 +504,11 @@ async function callGemini(userQuery, systemPrompt) {
     }
 
     const result = await response.json(); // La respuesta de Apps Script es un JSON
+
+    // AÑADIDO: Comprobar si el backend devolvió un error
+    if (result.error) {
+        throw new Error(`Error en el Backend (Apps Script): ${result.error}`);
+    }
     
     if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
         return result.candidates[0].content.parts[0].text;
@@ -522,7 +532,4 @@ function displayError(message) {
 
 </body>
 </html>
-
-
-
 
